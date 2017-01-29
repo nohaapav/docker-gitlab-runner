@@ -1,7 +1,8 @@
 FROM gitlab/gitlab-runner
 MAINTAINER Pavol Noha <pavol.noha@gmail.com>
 
-ADD register-runner.sh /register-runner.sh
-RUN chmod +x /register-runner.sh
+ADD runner.sh /runner.sh
+RUN chmod +x /runner.sh
 
-ENTRYPOINT ["/register-runner.sh"]
+ENTRYPOINT ["/runner.sh"]
+
