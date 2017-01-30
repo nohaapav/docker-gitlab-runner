@@ -6,6 +6,10 @@ token=()
 
 # SIGTERM-handler
 term_handler() {
+  if [ $pid -ne 0 ]; then
+    kill -SIGTERM "$pid"
+    wait "$pid"
+  fi
   gitlab-runner unregister -u ${GITLAB_SERVICE_URL} -t ${token}
   exit 143; # 128 + 15 -- SIGTERM
 }
@@ -19,6 +23,9 @@ yes '' | gitlab-runner register --url ${GITLAB_SERVICE_URL} --registration-token
 
 # assign runner token
 token=$(cat /etc/gitlab-runner/config.toml | grep token | awk '{print $3}' | tr -d '"')
+
+# run multi-runner
+gitlab-ci-multi-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner & pid="$!"
 
 # wait forever
 while true
