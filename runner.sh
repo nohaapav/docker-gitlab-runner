@@ -19,7 +19,13 @@ term_handler() {
 trap 'kill ${!}; term_handler' SIGTERM
 
 # register runner
-yes '' | gitlab-runner register --url ${GITLAB_SERVICE_URL} --registration-token ${GITLAB_RUNNER_TOKEN} --executor docker --name "runner" --docker-image "docker:latest"
+yes '' | gitlab-runner register --url ${GITLAB_SERVICE_URL} \
+                                --registration-token ${GITLAB_RUNNER_TOKEN} \
+                                --executor docker \
+                                --name "runner" \
+                                --output-limit "20480" \
+                                --docker-image "docker:latest" \
+                                --docker-volumes /root/m2:/root/.m2
 
 # assign runner token
 token=$(cat /etc/gitlab-runner/config.toml | grep token | awk '{print $3}' | tr -d '"')
