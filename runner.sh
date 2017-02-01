@@ -3,6 +3,7 @@ set -x
 
 pid=0
 token=()
+gitlab_service_url=http://${GITLAB_HOST}
 
 # SIGTERM-handler
 term_handler() {
@@ -10,7 +11,7 @@ term_handler() {
     kill -SIGTERM "$pid"
     wait "$pid"
   fi
-  gitlab-runner unregister -u ${GITLAB_SERVICE_URL} -t ${token}
+  gitlab-runner unregister -u ${gitlab_service_url} -t ${token}
   exit 143; # 128 + 15 -- SIGTERM
 }
 
@@ -19,13 +20,14 @@ term_handler() {
 trap 'kill ${!}; term_handler' SIGTERM
 
 # register runner
-yes '' | gitlab-runner register --url ${GITLAB_SERVICE_URL} \
+yes '' | gitlab-runner register --url ${gitlab_service_url} \
                                 --registration-token ${GITLAB_RUNNER_TOKEN} \
                                 --executor docker \
                                 --name "runner" \
                                 --output-limit "20480" \
                                 --docker-image "docker:latest" \
-                                --docker-volumes /root/m2:/root/.m2
+                                --docker-volumes /root/m2:/root/.m2 \
+                                --docker-extra-hosts ${GITLAB_HOST}:${GITLAB_IP}
 
 # assign runner token
 token=$(cat /etc/gitlab-runner/config.toml | grep token | awk '{print $3}' | tr -d '"')
