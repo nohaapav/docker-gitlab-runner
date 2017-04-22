@@ -3,7 +3,12 @@ set -x
 
 pid=0
 token=()
-gitlab_service_url=http://${GITLAB_HOST}
+
+if ! [[ $GITLAB_HOST =~ ^https?:// ]]; then
+  gitlab_service_url=http://${GITLAB_HOST}
+else
+  gitlab_service_url=${GITLAB_HOST}
+fi
 
 # SIGTERM-handler
 term_handler() {
