@@ -1,3 +1,3 @@
 all: build
 build: 
-	docker build -t nohaapav/docker-gitlab-runner . 
+	docker build -t nohaapav/docker-gitlab-runner:ersteapi . 
